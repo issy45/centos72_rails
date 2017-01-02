@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+
+  roles:
+    - role: git
+    - role: apache
+    - role: rbenv
+    - role: passenger
+    - role: mysql

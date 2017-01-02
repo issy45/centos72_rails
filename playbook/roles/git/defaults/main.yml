@@ -1,0 +1,13 @@
+---
+git_version: "2.10.1"
+
+git_dependencies:
+  - gcc 
+  - curl-devel 
+  - expat-devel 
+  - gettext-devel 
+  - openssl-devel 
+  - zlib-devel 
+  - perl-ExtUtils-MakeMaker
+
+git_download_dir: "/usr/src" 

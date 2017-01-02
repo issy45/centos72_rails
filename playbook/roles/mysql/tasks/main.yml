@@ -1,0 +1,48 @@
+---
+- name: mariadbを削除
+  yum:
+    name: mariadb-libs
+    state: absent
+
+- name: 既存のmysqlを削除
+  yum:
+    name: mysql*
+    state: absent
+
+- name: MySQL5.7のRPMリポジトリを追加
+  yum:
+    name: http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
+    state: installed
+
+- name: MySQL5.7をインストール
+  yum:
+    name: mysql-community-server
+    state: installed
+
+- name: /etc/my.cnfを設置
+  template:
+    src: mycnf.tj2
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: mysqlのchkconfigをONにする
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: デフォルトのランダムパスワードを確認
+  shell: "cat /var/log/mysqld.log | grep root@localhost | tr -s ' ' '\n' | tail -1"
+  register: root_init_password
+
+- name: パスワードの最低長を0にする
+  shell: mysql --connect-expired-password -uroot -p'{{ root_init_password.stdout }}' -e "set global validate_password_length=0"
+
+- name: パスワードポリシーをLOWに設定
+  shell: mysql --connect-expired-password -uroot -p'{{ root_init_password.stdout }}' -e "set global validate_password_policy=LOW"
+
+- name: rootのパスワードを変更
+  shell: mysql --connect-expired-password -uroot -p'{{ root_init_password.stdout }}' -e "set password for root@'localhost' = PASSWORD('{{ mysql_root_password }}')"
+ 

@@ -1,0 +1,11 @@
+---
+- name: Apache2.4をインストール
+  yum:
+    name: httpd
+    state: installed
+
+- name: httpd のサービス起動・自動起動設定
+  service:
+    name: httpd
+    state: started
+    enabled: yes

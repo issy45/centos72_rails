@@ -1,0 +1,66 @@
+---
+- name: rbenvをgit clone
+  git: 
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: ~/.rbenv
+  become:  no
+
+- name: ruby-buildをgit clone
+  git: 
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: ~/.rbenv/plugins/ruby-build
+  become:  no
+
+- name: readline-develをyumインストール
+  yum:
+    name: "readline-devel"
+    state: installed
+
+- name: bashファイルの追記
+  lineinfile:
+    dest: "~/.bash_profile"
+    line: export PATH="$HOME/.rbenv/bin:$PATH"
+  become: no
+
+- lineinfile:
+    dest: "~/.bash_profile"
+    line: eval "$(rbenv init -)"
+  become: no
+
+- name: Rubyの存在確認
+  command: which ruby
+  register: ruby_install
+  failed_when: ruby_install.rc not in [0, 1]
+  become: no
+
+- name: ruby2.4.0のインストール
+  command: bash -lc "rbenv install 2.4.0"
+  when: ruby_install.rc == 1
+  become: no
+
+- name: rbenv global 2.4.0
+  command: bash -lc "rbenv global 2.4.0"
+  when: ruby_install.rc == 1
+  become: no
+
+- name: railsのインストール
+  command: bash -lc "gem update --system"
+  when: ruby_install.rc == 1
+  become: no
+
+- name: gem install (rails, bundler, passenger)
+  gem:
+    name: "{{ item }}"
+    state: latest
+    executable: ~/.rbenv/shims/gem
+    user_install: false
+  become: no
+  with_items:
+    - rails
+    - bundler
+    - passenger
+
+- name: rehashを行う
+  command: bash -lc "rbenv rehash"
+  when: ruby_install.rc == 1
+  become: no
