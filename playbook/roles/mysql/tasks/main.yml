@@ -16,8 +16,11 @@
 
 - name: MySQL5.7をインストール
   yum:
-    name: mysql-community-server
+    name: "{{ item }}"
     state: installed
+  with_items:
+    - mysql-community-server
+    - mysql-devel
 
 - name: /etc/my.cnfを設置
   template:

@@ -1,6 +1,6 @@
 Vagrant.configure(2) do |config|
   config.vm.box     = "centos72"
-  config.vm.box_url = "https://www.dropbox.com/s/7u194d6reyr1loe/vagrant-centos-7.2.box?dl=0"
+  config.vm.box_url = "https://github.com/CommanderK5/packer-centos-template/releases/download/0.7.2/vagrant-centos-7.2.box"
 
   config.vm.network :private_network, ip: "192.168.33.10"
 
