@@ -4,6 +4,16 @@
     name: httpd
     state: installed
 
+- name: 他にも必要なライブラリインストール
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - gcc-c++
+    - httpd-devel
+    - apr-devel
+    - apr-util-devel
+
 - name: httpd のサービス起動・自動起動設定
   service:
     name: httpd
